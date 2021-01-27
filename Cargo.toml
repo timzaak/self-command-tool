@@ -1,0 +1,12 @@
+[package]
+name = "cm"
+version = "0.1.0"
+authors = ["timzaak <zsy.evan@gmail.com>"]
+edition = "2018"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+hocon = "0.3.7"
+#serde = { version = "1.0.116", features= ["derive"] }
+clap = "3.0.0-beta.2"
