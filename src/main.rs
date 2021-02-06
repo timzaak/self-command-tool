@@ -13,7 +13,7 @@ fn kubectl_exchange_command() -> App {
     App::new(KUBECTL_EXCHANGE_COMMAND).alias("ke".arg(Arg::new("prefix")))
 }
 fn main() ->Result<(), dyn Error> {
-    let config = &HoconLoader::new().load_file(std::env::home_dir().unwrap().join("self.conf"))?.hocon()?;
+    let config = &HoconLoader::new().load_file(home_dir().unwrap().join("self.conf"))?.hocon()?;
     let matches = App::new("cm").version("1.0").author("zsy.evan@gmail.com").about("self shell, save life")
         .subcommand(docker_repo_command())
         .subcommand(kubectl_exchange_command())
