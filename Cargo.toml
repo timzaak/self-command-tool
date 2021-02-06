@@ -10,3 +10,19 @@ edition = "2018"
 hocon = "0.3.7"
 #serde = { version = "1.0.116", features= ["derive"] }
 clap = "3.0.0-beta.2"
+
+warp = "0.3"
+reqwest = { version = "0.11", features = ["json"] }
+tokio = { version = "1", features=["full"] }
+
+
+serde = "1.0"
+serde_json = "1.0"
+serde_derive = "1.0"
+
+log = "0.4"
+pretty_env_logger = "0.4"
+
+clipboard = "0.5"
+bytes = "1.0.1"
+
