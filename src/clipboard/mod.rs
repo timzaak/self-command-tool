@@ -7,7 +7,6 @@ pub async fn start_clip_server() {
     pretty_env_logger::init();
     let path = warp::path!("clipboard").and(warp::post()).and(warp::body::bytes())
         .map(|b: bytes::Bytes| {
-
             let mut ctx: ClipboardContext = ClipboardProvider::new().unwrap();
             ctx.set_contents(String::from_utf8(b.to_vec()).unwrap());
             "ok"

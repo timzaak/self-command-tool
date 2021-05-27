@@ -25,6 +25,7 @@ fn sync_clipboard_command<'a>() -> App<'a> {
         .subcommand(App::new(SYNC_SUBCOMMAND).alias("s"))
 
 }
+
 #[tokio::main]
 async fn main() ->Result<(), Box<dyn std::error::Error>> {
     let config = &HoconLoader::new().load_file(home_dir().unwrap().join("self.conf"))?.hocon()?;

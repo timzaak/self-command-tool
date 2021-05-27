@@ -19,7 +19,7 @@
 `cm ke {filePrefix}` just like shell `cp ~/.kube/config.{filePrefix} ~/.kube/config`
 
 ### 同步dashboard
-`cm cs start_server` 开启同步服务
+`cm cs server_start` 开启同步服务
 
 `cm cs sync` 同步剪贴板
 
@@ -28,4 +28,9 @@
 {
 clipboardSync.remoteUrl='http://127.0.0.1:3001'
 }
+```
+
+## 安装
+```bash
+cargo install --path .
 ```
