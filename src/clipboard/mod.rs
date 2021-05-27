@@ -7,8 +7,10 @@ pub async fn start_clip_server() {
     pretty_env_logger::init();
     let path = warp::path!("clipboard").and(warp::post()).and(warp::body::bytes())
         .map(|b: bytes::Bytes| {
+            let c = String::from_utf8(b.to_vec()).unwrap();
+            println!("receive clipboard:\n{}",&c);
             let mut ctx: ClipboardContext = ClipboardProvider::new().unwrap();
-            ctx.set_contents(String::from_utf8(b.to_vec()).unwrap());
+            ctx.set_contents(c);
             "ok"
         });
     println!("begin to start server");

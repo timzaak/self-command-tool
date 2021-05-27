@@ -25,9 +25,7 @@
 
 配置文件：
 ```
-{
-clipboardSync.remoteUrl='http://127.0.0.1:3001'
-}
+clipboardSync.remoteUrl="http://127.0.0.1:3001/clipboard"
 ```
 
 ## 安装
