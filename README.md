@@ -23,9 +23,13 @@
 
 `cm cs sync` 同步剪贴板
 
+### v2fly 订阅(WIP)
+TODO:
+
 配置文件：
 ```
 clipboardSync.remoteUrl="http://127.0.0.1:3001/clipboard"
+v2fly.url="https://xxx.xx.xx"
 ```
 
 ## 安装
