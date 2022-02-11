@@ -1,5 +1,7 @@
 mod clipboard;
 mod v2fly;
+mod ui;
+
 use clap::{App, Arg};
 use std::process::Command;
 use hocon::HoconLoader;
