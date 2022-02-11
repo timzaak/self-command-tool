@@ -1,7 +1,8 @@
-use serde::{Deserialize,Serialize}
+use serde::{Deserialize,Serialize};
 pub struct User {
     id:String,
     encryption:String,
+
 }
 pub struct VNext {
     address:String,
@@ -13,11 +14,12 @@ pub struct VNext {
 pub struct StreamSettings {
 
 }
-#[derive(Serialize,Deserialize,Debug)]
+#[derive(Deserialize,Debug)]
 pub struct Outbounds {
     protocol:String,
     tag:String,
     settings:String,
     #[serde(rename="streamSetting")]
     stream_setting:StreamSettings,
+
 }
