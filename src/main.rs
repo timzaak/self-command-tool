@@ -4,7 +4,7 @@ mod ui;
 
 use clap::{App, Arg};
 use std::process::Command;
-use hocon::{Error, Hocon, HoconLoader};
+use hocon::{Hocon, HoconLoader};
 use std::env::home_dir;
 use crate::clipboard::{start_clip_server, clipboard_sync};
 use crate::ui::run_v2fly_ui;
@@ -84,12 +84,12 @@ async fn main() ->Result<(), Box<dyn std::error::Error>> {
                     let config = &config["v2fly"];
                     let url = config["url"].as_string().expect("v2fly.url must be set");
                     let path = config["configPath"].as_string().expect("v2fly.configPath must be set");
-                    let docker_name = config["dockerName"].as_string().unwrap_or_else("v2fly");
-                    let config = request_v2fly_config(url).await?;
+                    let docker_name = config["dockerName"].as_string().unwrap_or_else(||"v2fly".to_string());
+                    let config = request_v2fly_config(&url).await?;
                     let config_str = run_v2fly_ui(config).await?;
                     match config_str {
                         Some(c) => {
-                            v2fly_config_write(&c,path);
+                            v2fly_config_write(&c,path)?;
                             println!("write config to file, prepare to restart docker image");
                             let cm = format!("docker restart {}", docker_name);
                             let r = Command::new("bash").arg("-c").arg(cm).output()?;

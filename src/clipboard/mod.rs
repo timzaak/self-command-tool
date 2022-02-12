@@ -10,7 +10,7 @@ pub async fn start_clip_server() {
             let c = String::from_utf8(b.to_vec()).unwrap();
             println!("receive clipboard:\n{}",&c);
             let mut ctx: ClipboardContext = ClipboardProvider::new().unwrap();
-            ctx.set_contents(c)?;
+            ctx.set_contents(c).unwrap();
             "ok"
         });
     println!("begin to start server");

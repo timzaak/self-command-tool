@@ -1,17 +1,14 @@
-use std::io::Stdout;
 use std::time::Duration;
 use crossterm:: {
     execute,
     event::{self, Event},
     terminal::enable_raw_mode
 };
-use crossterm::event::{EnableMouseCapture, KeyCode};
+use crossterm::event::KeyCode;
 use crossterm::terminal::{disable_raw_mode, EnterAlternateScreen, LeaveAlternateScreen};
-use serde_json::{to_string_pretty, Value};
 use tokio::time::Instant;
-use tui::backend::{Backend, CrosstermBackend};
-use tui::{Frame, Terminal};
-use tui::layout::{Direction, Layout};
+use tui::backend::CrosstermBackend;
+use tui::Terminal;
 use tui::text::Span;
 use tui::widgets::{List, ListItem, ListState};
 use crate::v2fly::VMessConfig;
@@ -65,7 +62,7 @@ impl<T> StatefulList<T> {
         self.state.selected().map(|x| self.items.get(x)).flatten()
     }
 }
-
+/*
 fn ui<B:Backend>(f: &mut Frame<B>, data:&mut StatefulList<VMessConfig>)  {
     let list_items:Vec<ListItem> = data.items.iter().map(|c| {
         let i = Span::from(c.ps.as_str());
@@ -73,7 +70,7 @@ fn ui<B:Backend>(f: &mut Frame<B>, data:&mut StatefulList<VMessConfig>)  {
     }).collect();
     let list = List::new(list_items).highlight_symbol(">>");
     f.render_stateful_widget(list, f.size(), &mut data.state);
-}
+}*/
 
 pub async fn run_v2fly_ui(configs: Vec<VMessConfig>) -> anyhow::Result<Option<String>> {
     enable_raw_mode()?;
@@ -86,9 +83,17 @@ pub async fn run_v2fly_ui(configs: Vec<VMessConfig>) -> anyhow::Result<Option<St
 
     let mut data = StatefulList::with_items(configs);
     loop {
-        terminal.draw(|f|{ ui(f, &mut data) })?;
+        //terminal.draw(|f|{ ui(f, &mut data) })?;
+        terminal.draw(|f|{
+            let list_items:Vec<ListItem> = data.items.iter().map(|c| {
+                let i = Span::from(c.ps.as_str());
+                ListItem::new(i)
+            }).collect();
+            let list = List::new(list_items).highlight_symbol(">>");
+            f.render_stateful_widget(list, f.size(), &mut data.state);
+        })?;
         let timeout = tick_rate.checked_sub(last_tick.elapsed()).unwrap_or_else(||Duration::from_secs(0));
-        if(crossterm::event::poll(timeout)?) {
+        if crossterm::event::poll(timeout)? {
             if let Event::Key(key) = event::read()? {
                 match key.code {
                     KeyCode::Char('q') => break,

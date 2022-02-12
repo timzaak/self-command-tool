@@ -1,7 +1,6 @@
 use std::fs;
 use std::fs::File;
-use std::path::Path;
-use anyhow::anyhow;
+use std::path::PathBuf;
 use json_patch::merge;
 use reqwest::IntoUrl;
 use serde::{Serialize,Deserialize};
@@ -104,8 +103,8 @@ pub async fn request_v2fly_config<T:IntoUrl>(url:T) -> anyhow::Result<Vec<VMessC
     }
     Ok(v_mess_configs)
 }
-pub fn v2fly_config_write<T:AsRef<Path>>(data:&str, path:T) -> anyhow::Result<()>{
-    let mut path = path.as_ref().into_path_buf();
+pub fn v2fly_config_write(data:&str, path:String) -> anyhow::Result<()>{
+    let mut path = PathBuf::from(path);
     path.push("outbounds.json");
     let path = path.as_path();
     if !path.exists() {
