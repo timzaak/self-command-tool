@@ -1,4 +1,7 @@
-use std::borrow::BorrowMut;
+use std::fs;
+use std::fs::File;
+use std::path::Path;
+use anyhow::anyhow;
 use json_patch::merge;
 use reqwest::IntoUrl;
 use serde::{Serialize,Deserialize};
@@ -80,10 +83,7 @@ impl VMessConfig {
     }
 }
 
-
-
-
-pub async fn request_v2fly_config<T:IntoUrl>(url:T) -> anyhow::Result<String> {
+pub async fn request_v2fly_config<T:IntoUrl>(url:T) -> anyhow::Result<Vec<VMessConfig>> {
     let base64_str = reqwest::get(url).await?
         .text()
         .await?;
@@ -98,11 +98,20 @@ pub async fn request_v2fly_config<T:IntoUrl>(url:T) -> anyhow::Result<String> {
             v_mess_configs.push(v_mess_config);
             //println!("{:?}",v_mess_configD.to_v2fly_outbounds_json());
         //TODO: add vless
-
         }else {
             println!("only support vmess, original {}", c);
         }
     }
+    Ok(v_mess_configs)
+}
+pub fn v2fly_config_write<T:AsRef<Path>>(data:&str, path:T) -> anyhow::Result<()>{
+    let mut path = path.as_ref().into_path_buf();
+    path.push("outbounds.json");
+    let path = path.as_path();
+    if !path.exists() {
+        File::create(path)?;
+    }
+    fs::write(path, data)?;
+    Ok(())
 
-    Ok("".to_string())
 }

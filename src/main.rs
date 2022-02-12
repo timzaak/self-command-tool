@@ -4,10 +4,11 @@ mod ui;
 
 use clap::{App, Arg};
 use std::process::Command;
-use hocon::HoconLoader;
+use hocon::{Error, Hocon, HoconLoader};
 use std::env::home_dir;
 use crate::clipboard::{start_clip_server, clipboard_sync};
-use crate::v2fly::request_v2fly_config;
+use crate::ui::run_v2fly_ui;
+use crate::v2fly::{request_v2fly_config, v2fly_config_write};
 
 
 const DOCKER_REPO_COMMAND:&str = "docker_repo";
@@ -33,12 +34,15 @@ fn sync_clipboard_command<'a>() -> App<'a> {
 
 fn v2fly_command<'a>() ->App<'a> {
     App::new(V2FLY_SUBCOMMAND)
-        .subcommand(App::new(SERVER_START_SUBCOMMAND).alias("ss").arg(Arg::new("url").required(true)))
+        .subcommand(App::new(SYNC_SUBCOMMAND))
 }
 
+fn get_config_file() -> anyhow::Result<Hocon> {
+    Ok(HoconLoader::new().load_file(home_dir().unwrap().join("self.conf"))?.hocon()?)
+}
 #[tokio::main]
 async fn main() ->Result<(), Box<dyn std::error::Error>> {
-    let config = &HoconLoader::new().load_file(home_dir().unwrap().join("self.conf"))?.hocon()?;
+    //let config = &HoconLoader::new().load_file(home_dir().unwrap().join("self.conf"))?.hocon()?;
     let matches = App::new("cm").version("1.0").author("zsy.evan@gmail.com").about("self shell, save life")
         .subcommand(docker_repo_command())
         .subcommand(kubectl_exchange_command())
@@ -47,6 +51,7 @@ async fn main() ->Result<(), Box<dyn std::error::Error>> {
         .get_matches();
     match matches.subcommand() {
         Some((DOCKER_REPO_COMMAND,args)) => {
+            let config = &get_config_file()?;
             let name = args.value_of("name").unwrap();
             let c = &config["dockerRepo"][name];
             let cm = format!("echo {}| docker login uhub.service.ucloud.cn -u {} --password-stdin",c["password"].as_string().unwrap(), c["user"].as_string().unwrap());
@@ -65,6 +70,7 @@ async fn main() ->Result<(), Box<dyn std::error::Error>> {
                     start_clip_server().await
                 }
                 Some((SYNC_SUBCOMMAND, _)) => {
+                    let config = &get_config_file()?;
                     let s = &config["clipboardSync"]["remoteUrl"].as_string().unwrap();
                     clipboard_sync(s.as_str()).await;
                 }
@@ -73,10 +79,24 @@ async fn main() ->Result<(), Box<dyn std::error::Error>> {
         }
         Some((V2FLY_SUBCOMMAND, args)) => {
             match args.subcommand() {
-                Some((SERVER_START_SUBCOMMAND,args2)) => {
-                    let url = args2.value_of("url").unwrap();
+                Some((SYNC_SUBCOMMAND,_)) => {
+                    let config = &get_config_file()?;
+                    let config = &config["v2fly"];
+                    let url = config["url"].as_string().expect("v2fly.url must be set");
+                    let path = config["configPath"].as_string().expect("v2fly.configPath must be set");
+                    let docker_name = config["dockerName"].as_string().unwrap_or_else("v2fly");
                     let config = request_v2fly_config(url).await?;
-                    println!("{}", config)
+                    let config_str = run_v2fly_ui(config).await?;
+                    match config_str {
+                        Some(c) => {
+                            v2fly_config_write(&c,path);
+                            println!("write config to file, prepare to restart docker image");
+                            let cm = format!("docker restart {}", docker_name);
+                            let r = Command::new("bash").arg("-c").arg(cm).output()?;
+                            println!("{:?}",String::from_utf8_lossy(&r.stdout));
+                        },
+                        _ => println!("please use keyboard up and down to select")
+                    }
                 }
                 _ => panic!("does not match any command")
             }
