@@ -35,10 +35,11 @@ clipboardSync.remoteUrl="http://127.0.0.1:3001/clipboard"
 
 ### v2fly 镜像命令
 basePath 文件里存放 v2fly 的本地配置即可，例如指定日志等级、暴露端口等。
+outboundsPath 文件是 ${v2fly.configPath}/outbounds.json 文件，由程序生成。
 ```
-docker run --net=host --restart=always -v ${basePath}:/etc/v2ray/config.json -v${outboundsPath}:/etc/v2ray/outbounds.json --name=v2fly v2fly/v2fly-core:latest v2ray -confdir /etc/v2ray
+docker run -d --net=host --restart=always -v ${basePath}:/etc/v2ray/config.json -v ${outboundsPath}:/etc/v2ray/outbounds.json --name=v2fly v2fly/v2fly-core:latest v2ray -confdir /etc/v2ray
 ```
-MacOS 貌似不能用 net=host 需要自行指定端口。 
+macOS 貌似不能用 net=host 需要自行指定端口。 
 
 配置文件:
 ```

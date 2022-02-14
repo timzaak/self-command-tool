@@ -92,8 +92,8 @@ async fn main() ->Result<(), Box<dyn std::error::Error>> {
                             v2fly_config_write(&c,path)?;
                             println!("write config to file, prepare to restart docker image");
                             let cm = format!("docker restart {}", docker_name);
-                            let r = Command::new("bash").arg("-c").arg(cm).output()?;
-                            println!("{:?}",String::from_utf8_lossy(&r.stdout));
+                            let r = Command::new("bash").arg("-c").arg(&cm).output()?;
+                            println!("{}\nresult:===>\n{:?}", &cm, String::from_utf8_lossy(&r.stdout));
                         },
                         _ => println!("please use keyboard up and down to select")
                     }

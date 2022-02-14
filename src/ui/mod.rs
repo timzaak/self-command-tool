@@ -113,5 +113,7 @@ pub async fn run_v2fly_ui(configs: Vec<VMessConfig>) -> anyhow::Result<Option<St
         _ => {}
     }
 
-    Ok(data.get_select().map(|x|x.to_v2fly_outbounds_json().to_string()))
+    Ok(data.get_select().map(|x|{
+        serde_json::to_string_pretty(&(x.to_v2fly_outbounds_json())).unwrap()
+    }))
 }

@@ -29,7 +29,7 @@ impl VMessConfig {
               json!({
                   "wsSettings":{
                       "headers": {
-                          "Host": self.host,
+                          "host": self.host,
                       },
                       "path": if self.path.is_empty() {"/"} else { &self.path},
                   }
@@ -64,7 +64,7 @@ impl VMessConfig {
 
         json!({
             "remarks": self.ps,
-            "outbounds": {
+            "outbounds": [{
                 "settings":{
                     "vnext": [{
                         "address": self.add,
@@ -73,11 +73,19 @@ impl VMessConfig {
                             "id": self.id,
                             "level": 8,
                             "security": "auto",
+                            "encryption": "auto"
                         }]
                     }]
                 },
-                "streamSettings": stream_setting
-            }
+                "streamSettings": stream_setting,
+                "protocol": "vmess",
+                "tag": "proxy",
+                "mux": {
+                    "enabled":false,
+                    "concurrency": 8
+                },
+
+            }]
         })
     }
 }
