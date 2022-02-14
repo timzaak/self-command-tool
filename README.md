@@ -41,6 +41,8 @@ docker run -d --net=host --restart=always -v ${basePath}:/etc/v2ray/config.json 
 ```
 macOS 貌似不能用 net=host 需要自行指定端口。 
 
+全部配置测速功能，当前实现方式不适合做，需要调整到可直接操纵 v2fly 实例方可，但这样就重了，需要另起项目重新规划。
+
 配置文件:
 ```
 v2fly {
