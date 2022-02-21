@@ -96,7 +96,7 @@ pub async fn request_v2fly_config<T:IntoUrl>(url:T) -> anyhow::Result<Vec<VMessC
         .await?;
 
     let config_str = String::from_utf8(base64::decode(base64_str)?)?;
-    let config:Vec<&str> = config_str.split('\n').collect();
+    let config:Vec<&str> = config_str.trim_end().split('\n').collect();
     let mut v_mess_configs = vec![];
     for c  in config {
         if c.starts_with("vmess://") {
