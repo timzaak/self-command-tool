@@ -6,6 +6,7 @@ use crossterm:: {
 };
 use crossterm::event::KeyCode;
 use crossterm::terminal::{disable_raw_mode, EnterAlternateScreen, LeaveAlternateScreen};
+use serde_json::Value;
 use tokio::time::Instant;
 use tui::backend::CrosstermBackend;
 use tui::Terminal;
@@ -72,7 +73,7 @@ fn ui<B:Backend>(f: &mut Frame<B>, data:&mut StatefulList<VMessConfig>)  {
     f.render_stateful_widget(list, f.size(), &mut data.state);
 }*/
 
-pub async fn run_v2fly_ui(configs: Vec<VMessConfig>) -> anyhow::Result<Option<String>> {
+pub async fn run_v2fly_ui(configs: Vec<(String,Value)>) -> anyhow::Result<Option<String>> {
     enable_raw_mode()?;
     let mut stdout = std::io::stdout();
     execute!(stdout, EnterAlternateScreen)?;
@@ -86,7 +87,7 @@ pub async fn run_v2fly_ui(configs: Vec<VMessConfig>) -> anyhow::Result<Option<St
         //terminal.draw(|f|{ ui(f, &mut data) })?;
         terminal.draw(|f|{
             let list_items:Vec<ListItem> = data.items.iter().map(|c| {
-                let i = Span::from(c.ps.as_str());
+                let i = Span::from(c.0.as_str());
                 ListItem::new(i)
             }).collect();
             let list = List::new(list_items).highlight_symbol(">>");
@@ -109,11 +110,11 @@ pub async fn run_v2fly_ui(configs: Vec<VMessConfig>) -> anyhow::Result<Option<St
     execute!(terminal.backend_mut(), LeaveAlternateScreen)?;
     terminal.show_cursor()?;
     match data.get_select() {
-        Some(r) => println!("{}", r.ps),
+        Some(r) => println!("{}", r.0),
         _ => {}
     }
 
     Ok(data.get_select().map(|x|{
-        serde_json::to_string_pretty(&(x.to_v2fly_outbounds_json())).unwrap()
+        serde_json::to_string_pretty(&x.1).unwrap()
     }))
 }

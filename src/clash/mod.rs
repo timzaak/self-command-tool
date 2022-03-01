@@ -3,7 +3,6 @@ use std::fs;
 use std::fs::File;
 use std::path::PathBuf;
 use reqwest::IntoUrl;
-use warp::header::exact_ignore_case;
 
 pub async fn request_clash_config<T:IntoUrl>(url:T) -> anyhow::Result<String>{
     let base64_str = reqwest::get(url).await?
