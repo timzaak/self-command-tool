@@ -112,9 +112,11 @@ fn stream_transport_setting<T:AsRef<str>>(transport:T, header_type:Option<T>, ho
 
 fn vless_v2fly_config(url:Url) ->(String, Value) {
     let config: HashMap<String,String> = url.query_pairs().into_owned().collect();
+    let domain = Some(String::from(url.domain().unwrap()));
+
     let stream_settings = stream_transport_setting(
         config.get("type").unwrap_or(&String::from("tcp")),
-        config.get("headerType"), config.get("host"),
+        config.get("headerType"), domain.as_ref(),
         config.get("path"), config.get("seed"),
         config.get("quicSecurity"), config.get("key"),
         config.get("mode"), config.get("serviceName"),
